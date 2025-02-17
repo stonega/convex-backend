@@ -43,7 +43,7 @@ pub fn persistence_args_from_cluster_url(
             if require_ssl {
                 cluster_url
                     .query_pairs_mut()
-                    .append_pair("sslmode", "require");
+                    .append_pair("sslmode", "prefer");
             }
         },
         DbDriverTag::PostgresAwsIam(_) => {
