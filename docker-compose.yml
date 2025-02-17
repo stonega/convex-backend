@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  convex-backend: # Name of your service (can be anything)
+  backend: # Name of your service (can be anything)
     build:
       context: . # Build context (same as in your docker build command - current directory)
       dockerfile: self-hosted/docker-build/Dockerfile.backend # Path to your Dockerfile
