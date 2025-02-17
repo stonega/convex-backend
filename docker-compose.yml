@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  convex-backend: # Name of your service (can be anything)
+    build:
+      context: . # Build context (same as in your docker build command - current directory)
+      dockerfile: self-hosted/docker-build/Dockerfile.backend # Path to your Dockerfile
+    image: convex-backend # Image name (same as your -t tag)
+    ports:
+      - "3210"
+      - "3211"
+    volumes:
+      - data:/convex/data
+    environment:
+      - INSTANCE_NAME=${INSTANCE_NAME:-}
+      - INSTANCE_SECRET=${INSTANCE_SECRET:-}
+      - CONVEX_RELEASE_VERSION_DEV=${CONVEX_RELEASE_VERSION_DEV:-}
+      - ACTIONS_USER_TIMEOUT_SECS=${ACTIONS_USER_TIMEOUT_SECS:-}
+      - CONVEX_CLOUD_ORIGIN=${URL_BASE:-}
+      - CONVEX_SITE_ORIGIN=${SITE_URL_BASE:-}
+      - DATABASE_URL=${DATABASE_URL:-}
+      - DISABLE_BEACON=${DISABLE_BEACON:-}
+      - REDACT_LOGS_TO_CLIENT=${REDACT_LOGS_TO_CLIENT:-}
+      - RUST_LOG=${RUST_LOG:-info}
+      - RUST_BACKTRACE=${RUST_BACKTRACE:-}
+    healthcheck:
+      test: curl -f http://${URL_BASE:-}/version
+      interval: 5s
+      start_period: 5s
+
+  dashboard:
+    image: ghcr.io/get-convex/convex-dashboard:4499dd4fd7f2148687a7774599c613d052950f46
+    ports:
+      - "${DASHBOARD_PORT:-6791}:6791"
+    environment:
+      - NEXT_PUBLIC_DEPLOYMENT_URL=${URL_BASE:-}
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  data:
